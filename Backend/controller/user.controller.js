@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import { Job } from "../models/job.model.js";
 
 export const register = async (req, res) => {
   const { fullname, email, phone, password, role } = req.body;
@@ -165,8 +166,9 @@ export const updateprofile = async (req, res) => {
       phone: user.phone,
       role: user.role,
       profile: user.profile,
+      skills:skillsArray
     };
-
+ 
     return res.status(200).json({
       msg: "Profile updated",
       success: true,
@@ -180,3 +182,4 @@ export const updateprofile = async (req, res) => {
     });
   }
 };
+

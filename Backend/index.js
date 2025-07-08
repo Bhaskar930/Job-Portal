@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 import connectDB from './utils/db.js';
 import userRoute from "./routes/userroute.js";
 import companyrouter from "./routes/company.routes.js"
+import jobrouter from "./routes/job.route.js"
+import applyrouter from "./routes/application.route.js"
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ app.use(cors(corsOptions));
 
 app.use("/api/user", userRoute);
 app.use("/api/company",companyrouter);
+app.use("/api/job",jobrouter);
+app.use("/api/apply",applyrouter)
 
 connectDB();
 

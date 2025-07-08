@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 
 const isauthenticated = (req, res, next) => {
-  console.log("Cookies received:", req.cookies); // 🔍 DEBUG LINE
+  console.log("Cookies received:", req.cookies); // 🔍 Debugging
 
-  const token = req.cookies?.token; // ✅ Safe access
+  const token = req.cookies?.token;
 
   if (!token) {
     return res.status(401).json({
@@ -14,7 +14,12 @@ const isauthenticated = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.id = decoded.userId;
+
+    // ✅ This is the key fix:
+    req.user = { _id: decoded.userId };
+    console.log(req.user);
+    console.log(req.user._id);
+
     next();
   } catch (error) {
     console.log("JWT error:", error);
