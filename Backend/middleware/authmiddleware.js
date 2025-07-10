@@ -17,8 +17,7 @@ const isauthenticated = (req, res, next) => {
 
     // ✅ This is the key fix:
     req.user = { _id: decoded.userId };
-    console.log(req.user);
-    console.log(req.user._id);
+    
 
     next();
   } catch (error) {

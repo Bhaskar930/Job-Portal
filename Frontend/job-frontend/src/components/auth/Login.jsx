@@ -7,9 +7,16 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { USER_API_ENDPOINT } from "@/utils/constant";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuthUser, setLoading } from "@/redux/authSlice";
+import { Loader2 } from "lucide-react";
+import { Toaster } from "../ui/sonner";
+import { toast } from "sonner";
 
 const Login = () => {
+  const {loading}=useSelector(store=>store.auth);
     const navigate=useNavigate();
+    const dispatch=useDispatch();
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -29,6 +36,7 @@ const Login = () => {
    
     
     try{
+        dispatch(setLoading(true));
         const res=await axios.post(`${USER_API_ENDPOINT}/login`,input,{
             headers:{
                 "Content-Type":"application/json"
@@ -36,12 +44,15 @@ const Login = () => {
             withCredentials:true
         })
         if(res.data.success){
+            dispatch(setAuthUser(res.data.user))
             navigate('/')
-            toast.success(res.data.message)
+            toast.success(res.data.msg)
         }
 
     }catch(error){
         console.log(error);
+    }finally{
+       dispatch(setLoading(false));
     }
     console.log(input);
   };
@@ -104,10 +115,14 @@ const Login = () => {
               </div>
             </RadioGroup>
           </div>
-
-          <Button type="submit" className="w-full mt-4">
+          {
+            loading?<Button className="w-full my-4"><Loader2 className="mr-2 h-4 w-4 animate-spin" /></Button>:<Button type="submit" className="w-full mt-4">
             Login
           </Button>
+
+          }
+
+          
           <span className="text-sm">
             Don't have an account?{" "}
             <Link to="/signup" className="text-blue-600 underline">

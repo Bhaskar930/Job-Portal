@@ -8,8 +8,14 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { USER_API_ENDPOINT } from "@/utils/constant";
 import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import store from "@/redux/store";
+import { setLoading } from "@/redux/authSlice";
+import { Loader2 } from "lucide-react";
 
 const Signup = () => {
+  const{loading}=useSelector(store=>store.auth)
+  const dispatch=useDispatch();
     const navigate=useNavigate();
   const [input, setInput] = useState({
     fullname: "",
@@ -40,6 +46,7 @@ const Signup = () => {
         formdata.append("file",input.file);
     }
     try{
+      dispatch(setLoading(true));
         const res=await axios.post(`${USER_API_ENDPOINT}/register`,formdata,{
             headers:{
                 "Content-Type":"multipart/form-data"
@@ -53,6 +60,9 @@ const Signup = () => {
 
     }catch(error){
         console.log(error);
+    }
+    finally{
+      dispatch(setLoading(false));
     }
     console.log(input);
   };
@@ -136,9 +146,12 @@ const Signup = () => {
             onChange={changeFileHandler}
           />
 
-          <Button type="submit" className="w-full mt-4">
+           {
+            loading?<Button className="w-full my-4"><Loader2 className="mr-2 h-4 w-4 animate-spin" /></Button>:<Button type="submit" className="w-full mt-4">
             Signup
           </Button>
+
+          }
 
           <span className="text-sm">
             Already have an account?{" "}
