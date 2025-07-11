@@ -134,10 +134,12 @@ export const logout = (req, res) => {
 
 export const updateprofile = async (req, res) => {
   const file = req.file;
+  console.log(req.body);
   const { fullname, email, phone, bio, skills } = req.body;
 
   try {
-    const userId = req.id;
+    const userId = req.user._id;
+
     let user = await User.findById(userId);
 
     if (!user) {
@@ -152,9 +154,14 @@ export const updateprofile = async (req, res) => {
     if (phone) user.phone = phone;
     if (bio) user.profile.bio = bio;
 
+    let skillsArray = [];
     if (skills) {
-      const skillsArray = skills.split(",").map((skill) => skill.trim());
-      user.profile.skills = skillsArray;
+      try {
+        skillsArray = JSON.parse(skills); // ✅ parse string to array
+        user.profile.skills = skillsArray;
+      } catch (err) {
+        console.log("Error parsing skills:", err.message);
+      }
     }
 
     await user.save();
@@ -166,9 +173,9 @@ export const updateprofile = async (req, res) => {
       phone: user.phone,
       role: user.role,
       profile: user.profile,
-      skills:skillsArray
+      skills: skillsArray,
     };
- 
+
     return res.status(200).json({
       msg: "Profile updated",
       success: true,
@@ -182,4 +189,3 @@ export const updateprofile = async (req, res) => {
     });
   }
 };
-
