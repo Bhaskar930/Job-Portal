@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Jobs from "./components/Jobs";
 import Browse from "./components/Browse";
 import Profile from "./components/Profile";
+import JobDescription from "./components/JobDescription";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/jobs"element={<Jobs/>}></Route>
         <Route path="/browse"element={<Browse/>}></Route>
         <Route path="/profile"element={<Profile/>}></Route>
+        <Route path="/description/:id"element={<JobDescription/>}></Route>
       </Routes>
     </BrowserRouter>
   );

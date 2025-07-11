@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "./shared/Navbar";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Contact, Mail, Pen } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { Label } from "./ui/label";
+import AppliedJob from "./AppliedJob";
+import UpdateProfileDialog from "./UpdateProfileDialog";
+
+const skills=["HTML","CSS","JS","ReactJs"]
 
 const Profile = () => {
+  const[open,setOpen]=useState(false);
+  const hasResume=true;
+
+  
+  
   return (
     <div>
       <Navbar />
@@ -26,7 +37,9 @@ const Profile = () => {
               </p>
             </div>
             <div>
-              <Button className="text-right" variant="outline">
+              <Button onClick={()=>{
+                setOpen(true);
+              }} className="text-right" variant="outline">
                 <Pen />
               </Button>
             </div>
@@ -40,10 +53,35 @@ const Profile = () => {
           <div className="flex items-center gap-3 my-2">
             <Contact />
             <span>123456781</span>
+          </div>
+
         </div>
+        <div>
+          <h1 className="font-medium">Skills</h1>
+          <div className="flex items-center gap-1">
+            {skills.length==0?"Not Mentioned":skills.map((Item, index) => (
+            <Badge className="mr-2 mt-1" key={index}>{Item}</Badge>
+          ))}
+
+          </div>
+          <div className=" flex  w-full max-w-sm items-center gap-1.5 ">
+            <Label className="text-md font-bold">Resume</Label>
+            {
+              hasResume?<a className="text-blue-500 hover:underline" target="blank" href="https://google.com">Resume here</a>:<span>"Not Applicable</span>
+            }
+
+          </div>
+         
+      </div>
+       <div className="max-w-4xl mx-auto bg-white rounded-2xl"></div>
+          <h1 className="font-bold my-5 text-lg">Applied Jobs</h1>
+          <AppliedJob/>
+
           
         </div>
-      </div>
+        <div>
+          <UpdateProfileDialog open={open} setOpen={setOpen}/>
+        </div>
     </div>
   );
 };

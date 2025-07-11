@@ -4,8 +4,12 @@ import { Button } from "./ui/button";
 
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
+import { useNavigate } from "react-router-dom";
+
 
 const Job = () => {
+  const navigate=useNavigate();
+  const jobid="saddads";
   return (
     <div className="p-5 rounded-md shadow-xl bg-white border border-gray-100">
       <div className="flex items-cente justify-between">
@@ -41,7 +45,9 @@ const Job = () => {
       
             </div>
     <div className="flex mt-2 justify-between">
-        <Button variant="outline" >view detail</Button>
+        <Button variant="outline" onClick={()=>{
+          navigate(`/description/${jobid}`)
+        }} className="cursor-pointer" >view detail</Button>
         <Button className=" bg-[#7209B7]">Apply Nowl</Button>
     </div>
     </div>

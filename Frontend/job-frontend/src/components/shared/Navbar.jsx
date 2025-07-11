@@ -5,10 +5,20 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LogOut, User2 } from "lucide-react";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout } from "@/redux/authSlice";
+
 
 
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+const navigate = useNavigate();
+const handleLogout = () => {
+  dispatch(logout());       // clears user from Redux store
+  navigate("/login");       // navigates to login page
+};
   
   const {user}=useSelector(store=>store.auth);
   return (
@@ -22,7 +32,7 @@ const Navbar = () => {
         </div>
         <div className="flex items-center gap-12">
           <ul className="flex gap-5 font-medium items-center ">
-            <li> <Link to="/home">Home</Link></li>
+            <li> <Link to="/">Home</Link></li>
             <li> <Link to="/jobs">Jobs</Link></li>
             <li> <Link to="/browse">Browse</Link></li>
             
@@ -82,7 +92,7 @@ const Navbar = () => {
                   </div>
                   <div className="flex items-center p-0 m-0">
                     <LogOut width={20} />
-                    <Button variant="link">LogOut</Button>
+                    <Button variant="link" onClick={handleLogout}>LogOut</Button>
                   </div>
                 </div>
               </PopoverContent>
