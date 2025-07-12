@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import { Job } from "../models/job.model.js";
+import getDataUri from "../utils/dataUri.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const register = async (req, res) => {
   const { fullname, email, phone, password, role } = req.body;
@@ -132,60 +134,55 @@ export const logout = (req, res) => {
   }
 };
 
+
+
+
 export const updateprofile = async (req, res) => {
-  const file = req.file;
-  console.log(req.body);
-  const { fullname, email, phone, bio, skills } = req.body;
-
   try {
-    const userId = req.user._id;
+    const { fullname, email, phone, bio, skills } = req.body;
+    const file = req.file;
 
-    let user = await User.findById(userId);
+    const user = await User.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({
-        msg: "User Not Found",
-        success: false,
-      });
+      return res.status(404).json({ msg: "User not found", success: false });
     }
 
-    if (fullname) user.fullname = fullname;
-    if (email) user.email = email;
-    if (phone) user.phone = phone;
-    if (bio) user.profile.bio = bio;
+    // Update basic fields
+    user.fullname = fullname;
+    user.email = email;
+    user.phone = phone;
+    user.profile.bio = bio;
+    user.profile.skills = JSON.parse(skills);
 
-    let skillsArray = [];
-    if (skills) {
-      try {
-        skillsArray = JSON.parse(skills); // ✅ parse string to array
-        user.profile.skills = skillsArray;
-      } catch (err) {
-        console.log("Error parsing skills:", err.message);
-      }
+    // ✅ If file is uploaded, upload to Cloudinary (as raw type)
+    if (file) {
+      const fileUri = getDataUri(file);
+
+      const myCloud = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "raw", // Important for PDF
+        folder: "resumes",
+        use_filename: true,
+        unique_filename: false,
+      });
+
+      // ✅ Generate inline previewable URL
+      user.profile.resume = myCloud.secure_url.replace(
+        "/upload/",
+        "/upload/fl_attachment:false/fl_inline:true/"
+      );
+      user.profile.resumeOrignalName = file.originalname;
     }
 
     await user.save();
 
-    const updatedUser = {
-      _id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      profile: user.profile,
-      skills: skillsArray,
-    };
-
     return res.status(200).json({
-      msg: "Profile updated",
       success: true,
-      user: updatedUser,
+      msg: "Profile updated successfully",
+      user,
     });
   } catch (error) {
-    console.log("Update Profile Error:", error.message);
-    return res.status(500).json({
-      msg: "Server error",
-      success: false,
-    });
+    console.error("Error updating profile:", error);
+    return res.status(500).json({ msg: "Something went wrong", success: false });
   }
 };
